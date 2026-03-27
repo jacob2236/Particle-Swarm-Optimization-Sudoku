@@ -1,16 +1,19 @@
 import numpy as np
+import copy
 
 class SudokuBoard:
     def __init__(self, BoardString):
         self.board = [[0 for _ in range(9)] for _ in range(9)]
-        self.assignBoard(BoardString)
+        self.p_best_board = [[0 for _ in range(9)] for _ in range(9)]
         self.fitness = 69420
+        self.p_best_fitness = 69420
         self.givens = [] # we do not want the numbers in these indices to change
+        self.assignBoard(BoardString)
 
     def assignBoard(self, BoardString):
         for i in range(9):
             for j in range(9):
-                if BoardString[9*i + j] == '*':
+                if BoardString[9*i + j] == "*":
                     self.board[i][j] = 0
                 else:
                     self.board[i][j] = int(BoardString[9*i + j])
@@ -49,6 +52,10 @@ class SudokuBoard:
                             fitness += 1
 
         self.fitness = fitness
+        if self.fitness < self.p_best_fitness:
+            self.p_best_fitness = self.fitness
+            self.p_best_board = copy.deepcopy(self.board)
+
 
     #creates one string that is then printed to screen
     def print(self):
