@@ -50,6 +50,21 @@ def PMXcrossover2Parents(parent1,parent2):
 
     return child
 
+def mutate(sudokuboard):
+    potential_swaps = []
+    for i in range(9):
+        potential_swaps.clear()
+        for j in range(9):
+            if (i,j) not in sudokuboard.givens:
+                potential_swaps.append((i, j))
+        random.seed(time.time())
+        temp1x,temp1y = random.choice(potential_swaps)
+        potential_swaps.remove((temp1x,temp1y))
+        temp2x,temp2y = random.choice(potential_swaps)
+        temp = sudokuboard.board[temp1x][temp1y]
+        sudokuboard.board[temp1x][temp1y] = sudokuboard.board[temp2x][temp2y]
+        sudokuboard.board[temp2x][temp2y] = temp
+    return
 
 def mainPSO():
     BoardString = "53**7****6**195***98****6*****6***34**8*3**17***2***6*6****28***419**5****8**79**"
@@ -60,8 +75,8 @@ def mainPSO():
     Board.print()
     print(Board.p_best_board)
 
-    num_generations = 10
-    num_samples = 5
+    num_generations = 100
+    num_samples = 100
     samples = []
 
     for i in range(num_samples):
@@ -75,14 +90,21 @@ def mainPSO():
 
         samples.sort(key=lambda b: b.fitness)
 
+        for x in samples:
+            print(x.fitness)
+        print()
+
         for j in range(1,num_samples):
             best_parent,current_parent,current_best_parent = samples[0].board,samples[j].board,samples[j].p_best_board
 
             temp_child = copy.deepcopy(PMXcrossover2Parents(current_best_parent,current_parent))
             samples[j].board = copy.deepcopy(PMXcrossover2Parents(best_parent, temp_child))
 
+            random.seed(time.time())
+            random_int = random.random()
+            if random_int < .3:
+                mutate(samples[j])
+
             samples[j].fitnessEval()
-        for x in samples:
-            print(x.fitness)
 
 mainPSO()
