@@ -20,6 +20,82 @@ def randomFill(SudokuBoard):
 
     return SudokuBoard
 
+def geometricCrossover3Parents(parent1,parent2,parent3):
+    parent1weight,parent2weight,parent3weight = 0.2,0.4,0.4
+    temp1 = copy.deepcopy(parent1)
+    temp2 = copy.deepcopy(parent2)
+    temp3 = copy.deepcopy(parent3)
+    mask = []
+
+    for i in range(9):
+        mask.clear()
+        for j in range(9):
+            random.seed(time.time())
+            random_int = random.random()
+            if random_int < parent1weight:
+                mask.append(1)
+            elif random_int < parent2weight:
+                mask.append(2)
+            else:
+                mask.append(3)
+
+        for j in range(9):
+            if mask[j] == 1:
+                compare = temp1[i][j]
+                if not compare == temp2[i][j]:
+                    for n in range(9):
+                        if temp2[i][n] == compare:
+                            indextemp = temp2[i][j]
+                            temp2[i][j] = temp2[i][n]
+                            temp2[i][n] = indextemp
+                            break
+
+                if not compare == temp3[i][j]:
+                    for n in range(9):
+                        if temp3[i][n] == compare:
+                            indextemp = temp3[i][j]
+                            temp3[i][j] = temp3[i][n]
+                            temp3[i][n] = indextemp
+                            break
+
+            if mask[j] == 2:
+                compare = temp2[i][j]
+                if not compare == temp1[i][j]:
+                    for n in range(9):
+                        if temp1[i][n] == compare:
+                            indextemp = temp1[i][j]
+                            temp1[i][j] = temp1[i][n]
+                            temp1[i][n] = indextemp
+                            break
+
+                if not compare == temp3[i][j]:
+                    for n in range(9):
+                        if temp3[i][n] == compare:
+                            indextemp = temp3[i][j]
+                            temp3[i][j] = temp3[i][n]
+                            temp3[i][n] = indextemp
+                            break
+
+            if mask[j] == 3:
+                compare = temp3[i][j]
+                if not compare == temp2[i][j]:
+                    for n in range(9):
+                        if temp2[i][n] == compare:
+                            indextemp = temp2[i][j]
+                            temp2[i][j] = temp2[i][n]
+                            temp2[i][n] = indextemp
+                            break
+
+                if not compare == temp1[i][j]:
+                    for n in range(9):
+                        if temp1[i][n] == compare:
+                            indextemp = temp1[i][j]
+                            temp1[i][j] = temp1[i][n]
+                            temp1[i][n] = indextemp
+                            break
+
+    return temp1
+
 def PMXcrossover2Parents(parent1,parent2):
     child = copy.deepcopy(parent2)
 
@@ -97,8 +173,10 @@ def mainPSO():
         for j in range(1,num_samples):
             best_parent,current_parent,current_best_parent = samples[0].board,samples[j].board,samples[j].p_best_board
 
-            temp_child = copy.deepcopy(PMXcrossover2Parents(current_best_parent,current_parent))
-            samples[j].board = copy.deepcopy(PMXcrossover2Parents(best_parent, temp_child))
+            #temp_child = copy.deepcopy(PMXcrossover2Parents(current_best_parent,current_parent))
+            #samples[j].board = copy.deepcopy(PMXcrossover2Parents(best_parent, temp_child))
+
+            samples[j].board = copy.deepcopy(geometricCrossover3Parents(current_parent,best_parent,current_best_parent))
 
             random.seed(time.time())
             random_int = random.random()
