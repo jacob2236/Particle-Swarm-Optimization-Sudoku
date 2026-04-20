@@ -1,13 +1,39 @@
 import numpy as np
+import random as r
 
 class SudokuBoard:
     def __init__(self, BoardString):
         self.board = [[0 for _ in range(9)] for _ in range(9)]
-        self.assignBoard(BoardString)
-        self.fitness = 69420
         self.givens = [] # we do not want the numbers in these indices to change
+        self.fitness = 69420
+        self.assign_board(BoardString)
 
-    def assignBoard(self, BoardString):
+        self.valid_vals = [ i for i in range(1,10)]
+
+    def _unused_vals_in_row(self, row):
+        return [ i for i in range(len(self.board[row])) if self.board[row][i] not in self.valid_vals ]
+        
+    def random_fill(self):
+        '''
+        This function will randomly fill a sudoku board with values, keeping row consistency,
+        meaning that each row will always be correct (ie no duplicates)
+        :param SudokuBoard:
+        :return SudokuBoard:
+        '''
+
+        for i in range(len(self.board)):
+            unused = self._unused_vals_in_row(i)
+            r.shuffle(unused)
+            x = 0
+
+            for j in range(len(self.board[i])):
+                if self.board[i][j] > 0:
+                    continue
+
+                self.board[i][j] = unused[x]
+                x += 1
+
+    def assign_board(self, BoardString):
         for i in range(9):
             for j in range(9):
                 if BoardString[9*i + j] == '*':
@@ -16,7 +42,7 @@ class SudokuBoard:
                     self.board[i][j] = int(BoardString[9*i + j])
                     self.givens.append((i,j))
 
-    def fitnessEval(self):
+    def fitness_eval(self):
         fitness = 0
 
         #checks row consistency
@@ -51,7 +77,7 @@ class SudokuBoard:
         self.fitness = fitness
 
     #creates one string that is then printed to screen
-    def print(self):
+    def __str__(self):
         pboard = ""
         for i in range(9):
             if i!=0 and i%3==0:
@@ -61,4 +87,5 @@ class SudokuBoard:
                     pboard += "|"
                 pboard += f" {self.board[i][j]} "
             pboard += "\n"
-        print(pboard)
+
+        return pboard
