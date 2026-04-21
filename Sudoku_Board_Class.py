@@ -9,6 +9,7 @@ class SudokuBoard:
         self.assign_board(BoardString)
 
         self.valid_vals = [ i for i in range(1,10)]
+        self.local_best = None
 
     def _unused_vals_in_row(self, row):
         return [ i for i in range(len(self.board[row])) if self.board[row][i] not in self.valid_vals ]
@@ -32,6 +33,8 @@ class SudokuBoard:
 
                 self.board[i][j] = unused[x]
                 x += 1
+
+        self.fitness_eval()
 
     def assign_board(self, BoardString):
         for i in range(9):
@@ -74,9 +77,51 @@ class SudokuBoard:
                         else:
                             fitness += 1
 
+        if fitness < self.fitness:
+            self.local_best = self.board
+
         self.fitness = fitness
 
-    #creates one string that is then printed to screen
+    def merge_board(self, other_board, weight):
+
+        for _ in range(weight):
+            i, j = r.randint(0,8), r.randint(0,8) 
+
+            if (i, j) in self.givens:
+                continue
+
+            self.board[i][j] = other_board[i][j]
+
+        self.fitness_eval()
+
+    def merge_local_best(self, weight):
+        self.merge_board(self.local_best, weight)
+
+    def _mutate_row(self, i, chance):
+        while True:
+            if r.randint(0, 100) > chance:
+                return
+
+            j =  r.randint(0,8) 
+
+            while (i,j) in self.givens:
+                j = r.randint(0,8) 
+
+            y = r.randint(0,8) 
+
+            while (i,y) in self.givens:
+                y = r.randint(0,8) 
+
+            tmp = self.board[i][j]
+            self.board[i][j] = self.board[i][y]
+            self.board[i][y] = tmp
+
+    def mutate_board(self, chance):
+        for i in range(9):
+            self._mutate_row(i, chance)
+
+        self.fitness_eval()
+
     def __str__(self):
         pboard = ""
         for i in range(9):
@@ -88,4 +133,5 @@ class SudokuBoard:
                 pboard += f" {self.board[i][j]} "
             pboard += "\n"
 
-        return pboard
+        return pboard + f"fitness: {self.fitness}\n"
+

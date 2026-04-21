@@ -1,31 +1,64 @@
 from Sudoku_Board_Class import SudokuBoard
+import copy
 
-def neighborhood():
-    '''
-    This function will explore the nearby solutions, using the ideas from particle
-    swarm algorithm. Combining a random change with the best fitness board.
-    :return:
-    '''
+GENERATION_COUNT = 1000
+PARTICLE_COUNT = 100
 
+GLOBAL_WEIGHT = 30
+LOCAL_WEIGHT = 30
 
-def main_pso():
-    '''
-    This is the main function of Particle Swarm Optimization algoirthm. Here is where we will
-    want to run everything. THe idea is to initialize n boards by using the boardstring we get from
-    mohan and then randomly filling the n boards. ANd then for p cycles we will, get the fitness scores
-    of all boards, we then change each board randmly first and then use the best fitness board to
-    influence a new change, this is the "particle swarm" part of the implementation
-    :return:
-    '''
+MUTATE_CHANCE = 10
 
-#This is just testing sudokuboard class functions
-BoardString = input()
-board = SudokuBoard(BoardString)
-print(board)
+def get_global_best(particle_arr):
+    best = particle_arr[0]
 
-board.random_fill()
-print(board)
+    for p in particle_arr:
+        if p.fitness < best.fitness:
+            best = p
 
-board.fitness_eval()
-print(board.fitness)
+    return best
+
+def global_travel(arr, g_best):
+    for p in arr:
+        p.merge_board(g_best.board, GLOBAL_WEIGHT)
+
+def local_travel(arr):
+    for p in arr:
+        p.merge_local_best(LOCAL_WEIGHT)
+
+def mutate_particles(arr, g_best):
+    for p in arr:
+        if p == g_best:
+            continue
+
+        p.mutate_board(MUTATE_CHANCE)
+
+def init_particles(board_string):
+    arr = [ SudokuBoard(board_string) for _ in range(PARTICLE_COUNT) ]
+
+    for p in arr:
+        p.random_fill()
+
+    return arr
+
+def main_pso(board_string):
+    particles = init_particles(board_string)
+    g_best = get_global_best(particles)
+
+    for _ in range(GENERATION_COUNT):
+        local_travel(particles)
+        global_travel(particles, g_best)
+        mutate_particles(particles, g_best)
+
+        gen_best = get_global_best(particles)
+
+        if gen_best.fitness < g_best.fitness:
+            g_best = copy.deepcopy(gen_best)
+
+        print(f"Generation global best fitness: {gen_best.fitness}")
+        print(f"Global best fitness: {g_best.fitness}\n")
+
+# this is just testing sudokuboard class functions
+board_string = input()
+main_pso(board_string)
 
