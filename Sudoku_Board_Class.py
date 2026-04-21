@@ -1,5 +1,6 @@
 import numpy as np
 import random as r
+import copy
 
 class SudokuBoard:
     def __init__(self, BoardString):
@@ -78,7 +79,7 @@ class SudokuBoard:
                             fitness += 1
 
         if fitness < self.fitness:
-            self.local_best = self.board
+            self.local_best = copy.deepcopy(self.board)
 
         self.fitness = fitness
 
