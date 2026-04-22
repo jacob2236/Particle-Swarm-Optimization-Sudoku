@@ -2,12 +2,12 @@ from Sudoku_Board_Class import SudokuBoard
 import copy
 
 GENERATION_COUNT = 1000
-PARTICLE_COUNT = 500
+PARTICLE_COUNT = 300
 
-GLOBAL_WEIGHT = 20
+GLOBAL_WEIGHT = 10
 LOCAL_WEIGHT = 100
 
-MUTATE_CHANCE = 30
+MUTATE_CHANCE = 40
 
 def get_global_best(particle_arr):
     best = particle_arr[0]

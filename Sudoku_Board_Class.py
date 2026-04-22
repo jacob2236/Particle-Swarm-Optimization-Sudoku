@@ -7,6 +7,7 @@ class SudokuBoard:
         self.board = [[0 for _ in range(9)] for _ in range(9)]
         self.givens = [] # we do not want the numbers in these indices to change
         self.fitness = 69420
+        self.best_fitness = 69420
         self.assign_board(BoardString)
 
         self.valid_vals = [ i for i in range(1,10)]
@@ -78,8 +79,9 @@ class SudokuBoard:
                         else:
                             fitness += 1
 
-        if fitness < self.fitness:
+        if fitness < self.best_fitness:
             self.local_best = copy.deepcopy(self.board)
+            self.best_fitness = fitness
 
         self.fitness = fitness
 
