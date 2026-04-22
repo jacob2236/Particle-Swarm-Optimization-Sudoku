@@ -56,6 +56,7 @@ class SudokuBoard:
             self.p_best_fitness = self.fitness
             self.p_best_board = copy.deepcopy(self.board)
 
+        return
 
     #creates one string that is then printed to screen
     def print(self):

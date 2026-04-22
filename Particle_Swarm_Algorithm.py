@@ -142,17 +142,19 @@ def mutate(sudokuboard):
         sudokuboard.board[temp2x][temp2y] = temp
     return
 
+
 def mainPSO():
-    BoardString = "53**7****6**195***98****6*****6***34**8*3**17***2***6*6****28***419**5****8**79**"
+    BoardString = "********1*******23**4**5******1*********3*6****7***58*****67****1***4***52*******"
     Board = SudokuBoard(BoardString)
-    #Board.print()
+    print("Starting board:")
+    Board.print()
+    print()
     Board = randomFill(Board)
     Board.fitnessEval()
-    Board.print()
-    print(Board.p_best_board)
 
-    num_generations = 100
-    num_samples = 100
+
+    num_generations = 200
+    num_samples = 500
     samples = []
 
     for i in range(num_samples):
@@ -166,9 +168,9 @@ def mainPSO():
 
         samples.sort(key=lambda b: b.fitness)
 
-        for x in samples:
+        '''for x in samples:
             print(x.fitness)
-        print()
+        print()'''
 
         for j in range(1,num_samples):
             best_parent,current_parent,current_best_parent = samples[0].board,samples[j].board,samples[j].p_best_board
@@ -184,5 +186,8 @@ def mainPSO():
                 mutate(samples[j])
 
             samples[j].fitnessEval()
+
+    print(f"This is the best fitness over {num_generations} generations and {num_samples} particles: {samples[0].fitness}")
+    samples[0].print()
 
 mainPSO()
